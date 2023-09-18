@@ -1,6 +1,7 @@
 // src/pages/AddLinkPage.tsx
 import React, { useState } from 'react';
 import {Console} from "inspector";
+import {Grow} from "@mui/material";
 
 const AddLinkPage: React.FunctionComponent = () => {
     const [link, setLink] = useState<string>('');
@@ -9,17 +10,15 @@ const AddLinkPage: React.FunctionComponent = () => {
     const [note, setNote] = useState<string>('');
 
     const handleLinkSubmit = () => {
-        // Logic to submit the link
         console.log("We are submitting a link to " + link)
     };
 
-    // TODO: Add logic to fetch topic suggestions based on user input
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: "red", flex: 1}}>
             <h2>I'll totally read this later</h2>
 
             <div style={{ margin: '20px 0' }}>
+                <label>Link:</label>
                 <input
                     type="text"
                     value={link}
@@ -27,7 +26,6 @@ const AddLinkPage: React.FunctionComponent = () => {
                     placeholder="Paste link"
                     style={{ padding: '10px', marginRight: '10px', width: '300px' }}
                 />
-                <button onClick={handleLinkSubmit}>Submit</button>
             </div>
 
             <div style={{ margin: '20px 0', width: '300px' }}>
@@ -66,6 +64,9 @@ const AddLinkPage: React.FunctionComponent = () => {
                     rows={4}
                     style={{ width: '100%', padding: '10px' }}
                 />
+            </div>
+            <div>
+                <button onClick={handleLinkSubmit}>Submit</button>
             </div>
         </div>
     );

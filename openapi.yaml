@@ -1,0 +1,106 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI Document on Azure Functions
+  description: This is the OpenAPI Document on Azure Functions
+  version: 1.0.0
+servers:
+  - url: http://localhost:7071/api
+paths:
+  /get-url-preview:
+    post:
+      summary: Gets a preview of a url
+      operationId: get-url-preview
+      requestBody:
+        description: Contains the url to be retrieved
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getUrlPreviewParams'
+            examples:
+              sample1:
+                value: '{"url":"www.rac.com.au"}'
+              sample2:
+                value: '{"url":"www.google.com.au"}'
+        required: true
+      responses:
+        '200':
+          description: 'This returns the response containing immediate url preview values, without any image'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/urlPreview'
+              examples:
+                sample1:
+                  value: '{"title":"Hello World Website","summary":"Welcome the whole new world!","imagePath":null}'
+          x-ms-summary: The response
+      x-ms-visibility: important
+  /links:
+    post:
+      description: Add a link
+      operationId: AddLink_Post
+      requestBody:
+        description: Contains the url link to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/urlLink'
+        required: true
+      responses:
+        '200':
+          description: Url was sent and added successfully
+        '400':
+          description: Invalid url object was sent in the request body
+    get:
+      description: Gets all links
+      operationId: GetLinks_Get
+      requestBody:
+        description: Contains the url link to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/urlLink'
+        required: true
+      responses:
+        '200':
+          description: Response containing all links
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/urlLink'
+components:
+  schemas:
+    getUrlPreviewParams:
+      required:
+        - url
+      type: object
+      properties:
+        url:
+          minLength: 1
+          type: string
+    urlLink:
+      type: object
+      properties:
+        url:
+          type: string
+        dateCreated:
+          type: string
+          format: date-time
+        topic:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        note:
+          type: string
+    urlPreview:
+      type: object
+      properties:
+        title:
+          type: string
+        summary:
+          type: string
+        imagePath:
+          type: string

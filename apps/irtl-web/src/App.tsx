@@ -8,12 +8,15 @@ import {
 
 import logo from './logo.svg';
 import './App.css';
-import {Banner, Navbar} from './components';
 import {AddLinkPage, IntroPage} from "./pages";
 import {ThemeProvider} from '@mui/material/styles';
 import theme from './theme';
+import {Banner, Navbar} from "./components";
 
 function App() {
+    
+    console.log("Render App");
+    
     return (
         // <div className="App">
         //   <header className="App-header">
@@ -39,7 +42,6 @@ function App() {
                     <Routes>
                         <Route path="/" element={<IntroPage/>}/>
                         <Route path="/add-link" element={<AddLinkPage/>}/>
-                        {/* other routes */}
                     </Routes>
                 </div>
             </BrowserRouter>
