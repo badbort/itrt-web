@@ -34,9 +34,6 @@ public class CreateLink
         var logger = executionContext.GetLogger(nameof(AddLink));
         logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        int.TryParse(req.Query["page"], out int page);
-        int.TryParse(req.Query["pageSize"], out int pageSize);
-        
         var requestData = await req.ReadFromJsonAsync<UrlLink>();
 
         if (requestData?.Url == null || Uri.TryCreate(requestData.Url, UriKind.Absolute, out var uri))
