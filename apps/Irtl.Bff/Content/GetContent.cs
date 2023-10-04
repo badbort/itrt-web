@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Mime;
+using Irtl.Bff.Links.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 
 namespace Irtl.Bff.Content;
@@ -10,6 +13,9 @@ namespace Irtl.Bff.Content;
 public static class GetContent
 {
     [Function(nameof(GetContent))]
+    [OpenApiOperation(nameof(GetContent), Description = "Gets file content")]
+    [OpenApiParameter("path", Required = true, Description = "The content's relative path")]
+    [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Content not found")]
     public static async Task<HttpResponseData> Run([HttpTrigger("get", Route = "content/{*path}")] HttpRequestData req,
         FunctionContext executionContext, string path)
     {

@@ -9,5 +9,10 @@ public class UrlPreview
     /// <summary>
     /// Relative path to the image in the backing storage
     /// </summary>
-    public string ImagePath { get; set; }
+    public string? ImagePath { get; set; }
+    
+    /// <summary>
+    /// Relative path to the icon for the website in the backing storage
+    /// </summary>
+    public string? IconPath { get; set; }
 }

@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irtl.Bff", "Irtl.Bff.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irtl.Model", "..\..\libs\Irtl.Model\Irtl.Model.csproj", "{DA6DF4E2-3E2C-4BB8-931A-ED83E72DE13A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irtl.Data", "Irtl.Data\Irtl.Data.csproj", "{A19099A1-2523-4AEA-88EF-D06DE022C718}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{DA6DF4E2-3E2C-4BB8-931A-ED83E72DE13A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA6DF4E2-3E2C-4BB8-931A-ED83E72DE13A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA6DF4E2-3E2C-4BB8-931A-ED83E72DE13A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A19099A1-2523-4AEA-88EF-D06DE022C718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A19099A1-2523-4AEA-88EF-D06DE022C718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A19099A1-2523-4AEA-88EF-D06DE022C718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A19099A1-2523-4AEA-88EF-D06DE022C718}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

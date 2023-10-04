@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Net.Mime;
 using System.Text.RegularExpressions;
+using Hellang.Middleware.ProblemDetails;
+using HtmlAgilityPack;
 using Irtl.Bff.WebPreview.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -39,14 +41,32 @@ public class WebPreviewFunctions
         Summary = "The response",
         Description = "This returns the response containing immediate url preview values, without any image", 
         Example = typeof(ResponseExample))]
+    [OpenApiResponseWithBody(HttpStatusCode.BadRequest, "application/problem+json", typeof(ProblemDetails), 
+        Summary = "The response",
+        Description = "This returns the response containing immediate url preview values, without any image", 
+        Example = typeof(ResponseExample))]
     public async Task<HttpResponseData> Run([HttpTrigger("post")] HttpRequestData req,
         FunctionContext executionContext)
     {
         var requestData = await req.ReadFromJsonAsync<GetUrlPreviewParams>();
-
+        
         if (string.IsNullOrEmpty(requestData?.Url))
         {
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+            throw new ProblemDetailsException(new ProblemDetails
+            {
+                Title = "Invalid request body or missing URL",
+                Status = (int)HttpStatusCode.BadRequest
+            });
+        }
+
+        if (!Uri.TryCreate(requestData.Url, UriKind.Absolute, out var uri))
+        {
+            throw new ProblemDetailsException(new ProblemDetails
+            {
+                Title = "Invalid URL",
+                Detail = $"The supplied url '{requestData.Url}' is not a valid uri object",
+                Status = (int)HttpStatusCode.BadRequest
+            });
         }
 
         var logger = executionContext.GetLogger(nameof(WebPreviewFunctions));
@@ -54,15 +74,60 @@ public class WebPreviewFunctions
 
         var httpClient = _clientFactory.CreateClient();
 
-        var htmlContent = await httpClient.GetStringAsync(requestData.Url);
+        logger.LogInformation("Fetching html content from url {Url}", requestData.Url);
+        
+        string htmlContent;
+
+        try
+        {
+            htmlContent = await httpClient.GetStringAsync(requestData.Url);
+        }
+        catch (Exception e)
+        {
+            throw new ProblemDetailsException(new ProblemDetails
+            {
+                Title = "Could not get HTML content from url",
+                Detail = $"Failed to get the html content from url '{requestData.Url}': {e.Message}",
+                Status = (int)HttpStatusCode.BadRequest
+            }, e);
+        }
 
         var m = Regex.Match(htmlContent, @"<title>\s*(.+?)\s*</title>");
         var title = m.Success ? m.Groups[1].Value : "Unknown Title";
+        
+        var document = new HtmlDocument();
+        document.LoadHtml(htmlContent);
+        
+        var titleNode = document.DocumentNode.SelectSingleNode("//title");
+        title = titleNode != null ? titleNode.InnerHtml : "Unknown Title";
+        
+        var iconNode = document.DocumentNode.SelectSingleNode("//link[@rel='shortcut icon']") ?? document.DocumentNode.SelectSingleNode("//link[@rel='icon']");
+        var iconPath = iconNode?.GetAttributeValue("href", null);
+
+        if (string.IsNullOrEmpty(iconPath) && uri != null)
+        {
+            UriBuilder builder = new UriBuilder(uri);
+            builder.Host = uri.Host;
+            builder.Scheme = uri.Scheme;
+            builder.Path = "/favicon.ico";
+            var favIconPath = builder.Uri;
+            
+            var favIconResponse = await httpClient.GetAsync(favIconPath);
+            if (favIconResponse.IsSuccessStatusCode)
+            {
+                iconPath = builder.Uri.ToString();
+            }
+        }
+        
+        var imageNode = document.DocumentNode.SelectSingleNode("//meta[@property='og:image']");
+        var imagePath = imageNode?.GetAttributeValue("content", null);
 
         await response.WriteAsJsonAsync(new UrlPreview
         {
             Title = title,
-            Summary = "Blah blah blah website"
+            Summary = "Blah blah blah website",
+            ImagePath = imagePath,
+            IconPath = iconPath
         });
 
         return response;
